@@ -1,0 +1,19 @@
+# Dependencias
+node_modules/
+
+# Variables de entorno — NUNCA subir
+.env
+.env.local
+.env.production
+.env.*.local
+
+# Next.js build
+.next/
+out/
+
+# Logs
+*.log
+
+# Sistema
+.DS_Store
+Thumbs.db

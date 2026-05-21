@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 15 15 26;
+    --foreground: 255 255 255;
+  }
+
+  * {
+    @apply border-white/10;
+  }
+
+  body {
+    @apply antialiased;
+  }
+
+  ::selection {
+    @apply bg-chain-green/30 text-white;
+  }
+
+  ::-webkit-scrollbar {
+    @apply w-1.5;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-brand-darker;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-brand-muted rounded-full;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-chain-green text-brand-darker font-semibold px-6 py-2.5 rounded-lg
+           hover:bg-chain-green/90 active:scale-95 transition-all duration-150
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply border border-white/20 text-white px-6 py-2.5 rounded-lg
+           hover:bg-white/5 active:scale-95 transition-all duration-150;
+  }
+
+  .btn-danger {
+    @apply bg-brand-red text-white font-semibold px-6 py-2.5 rounded-lg
+           hover:bg-brand-red/90 active:scale-95 transition-all duration-150;
+  }
+
+  .card {
+    @apply bg-brand-surface border border-white/10 rounded-xl p-6
+           hover:border-white/20 transition-colors duration-200;
+  }
+
+  .input {
+    @apply w-full bg-brand-dark border border-white/20 rounded-lg px-4 py-2.5
+           text-white placeholder-white/40 focus:outline-none focus:border-chain-green/60
+           focus:ring-1 focus:ring-chain-green/30 transition-all duration-150;
+  }
+
+  .hash-text {
+    @apply font-mono text-chain-blue text-sm tracking-wider;
+  }
+
+  .badge-yes    { @apply bg-chain-green/20 text-chain-green border border-chain-green/30 rounded-full px-3 py-0.5 text-xs font-medium; }
+  .badge-no     { @apply bg-brand-red/20 text-red-400 border border-brand-red/30 rounded-full px-3 py-0.5 text-xs font-medium; }
+  .badge-abstain { @apply bg-white/10 text-white/60 border border-white/20 rounded-full px-3 py-0.5 text-xs font-medium; }
+
+  .glow-green { box-shadow: 0 0 20px rgba(0, 214, 143, 0.15); }
+  .glow-blue  { box-shadow: 0 0 20px rgba(51, 153, 255, 0.15); }
+}

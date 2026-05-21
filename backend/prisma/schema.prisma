@@ -1,0 +1,278 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String    @id @default(uuid())
+  email           String    @unique
+  passwordHash    String
+  username        String    @unique
+  displayName     String?
+  walletAddress   String    @unique  // Hash único estilo Web3
+  bio             String?
+  avatarUrl       String?
+  isPublic        Boolean   @default(true)
+  isVerified      Boolean   @default(false)
+  twoFactorEnabled Boolean  @default(false)
+  twoFactorSecret  String?
+  role            UserRole  @default(CITIZEN)
+  reputation      Int       @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  lastLoginAt     DateTime?
+  loginAttempts   Int       @default(0)
+  lockedUntil     DateTime?
+
+  isBanned           Boolean   @default(false)
+  isCommentBanned    Boolean   @default(false)
+
+  proposals           Proposal[]
+  votes               Vote[]
+  comments            Comment[]
+  sessions            Session[]
+  notifications       Notification[]
+  proposalReactions   ProposalReaction[]
+  commentReactions    CommentReaction[]
+  favorites           Favorite[]
+
+  @@map("users")
+}
+
+enum UserRole {
+  CITIZEN
+  MODERATOR
+  ADMIN
+}
+
+model Session {
+  id          String   @id @default(uuid())
+  userId      String
+  token       String   @unique
+  deviceInfo  String?
+  ipAddress   String?
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model Proposal {
+  id              String          @id @default(uuid())
+  blockHash       String          @unique  // Hash del bloque en la cadena
+  authorId        String
+  title           String
+  summary         String
+  content         String          @db.Text
+  category        ProposalCategory
+  territory       Territory       @default(NACIONAL)
+  status          ProposalStatus  @default(DRAFT)
+  votingStartsAt  DateTime?
+  votingEndsAt    DateTime?
+  threshold       Int             @default(100)  // votos mínimos para ser válida
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  author          User              @relation(fields: [authorId], references: [id])
+  votes           Vote[]
+  comments        Comment[]
+  reactions       ProposalReaction[]
+  favorites       Favorite[]
+  block           Block?            @relation(fields: [blockHash], references: [hash])
+
+  @@map("proposals")
+}
+
+enum ProposalCategory {
+  EDUCACION
+  SANIDAD
+  ECONOMIA
+  MEDIO_AMBIENTE
+  JUSTICIA
+  VIVIENDA
+  TECNOLOGIA
+  CULTURA
+  DEFENSA
+  OTRO
+}
+
+enum Territory {
+  NACIONAL
+  ANDALUCIA
+  ARAGON
+  ASTURIAS
+  BALEARES
+  CANARIAS
+  CANTABRIA
+  CASTILLA_LA_MANCHA
+  CASTILLA_Y_LEON
+  CATALUNA
+  EXTREMADURA
+  GALICIA
+  LA_RIOJA
+  MADRID
+  MURCIA
+  NAVARRA
+  PAIS_VASCO
+  VALENCIA
+  CEUTA
+  MELILLA
+}
+
+enum ProposalStatus {
+  DRAFT
+  PENDING_REVIEW
+  ACTIVE
+  VOTING
+  APPROVED
+  REJECTED
+  EXPIRED
+}
+
+model Vote {
+  id          String    @id @default(uuid())
+  voteHash    String    @unique  // Hash único del voto — recibo verificable
+  blockHash   String              // Bloque donde quedó registrado
+  userId      String
+  proposalId  String
+  choice      VoteChoice
+  isAnonymous Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+
+  user        User      @relation(fields: [userId], references: [id])
+  proposal    Proposal  @relation(fields: [proposalId], references: [id])
+  block       Block?    @relation(fields: [blockHash], references: [hash])
+
+  @@unique([userId, proposalId])  // Un voto por usuario por propuesta
+  @@map("votes")
+}
+
+enum VoteChoice {
+  YES
+  NO
+  ABSTAIN
+}
+
+model Block {
+  id            String    @id @default(uuid())
+  hash          String    @unique
+  previousHash  String
+  merkleRoot    String
+  data          Json      // Datos del bloque (transacciones/votos)
+  nonce         Int
+  index         Int       @unique
+  timestamp     DateTime  @default(now())
+
+  proposals     Proposal[]
+  votes         Vote[]
+
+  @@map("blocks")
+}
+
+model Comment {
+  id          String    @id @default(uuid())
+  userId      String
+  proposalId  String
+  content     String    @db.Text
+  parentId    String?
+  isDeleted   Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user        User              @relation(fields: [userId], references: [id])
+  proposal    Proposal          @relation(fields: [proposalId], references: [id])
+  parent      Comment?          @relation("CommentReplies", fields: [parentId], references: [id])
+  replies     Comment[]         @relation("CommentReplies")
+  reactions   CommentReaction[]
+
+  @@map("comments")
+}
+
+model Notification {
+  id        String    @id @default(uuid())
+  userId    String
+  type      String
+  title     String
+  message   String
+  isRead    Boolean   @default(false)
+  link      String?
+  createdAt DateTime  @default(now())
+
+  user      User      @relation(fields: [userId], references: [id])
+
+  @@map("notifications")
+}
+
+model EmailVerification {
+  id        String    @id @default(uuid())
+  email     String
+  token     String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@map("email_verifications")
+}
+
+model PasswordReset {
+  id        String    @id @default(uuid())
+  userId    String
+  token     String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@map("password_resets")
+}
+
+enum ReactionType {
+  LIKE
+  DISLIKE
+}
+
+model ProposalReaction {
+  id         String       @id @default(uuid())
+  userId     String
+  proposalId String
+  type       ReactionType
+  createdAt  DateTime     @default(now())
+
+  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  proposal   Proposal     @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, proposalId])
+  @@map("proposal_reactions")
+}
+
+model Favorite {
+  id         String   @id @default(uuid())
+  userId     String
+  proposalId String
+  createdAt  DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  proposal   Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, proposalId])
+  @@map("favorites")
+}
+
+model CommentReaction {
+  id        String       @id @default(uuid())
+  userId    String
+  commentId String
+  type      ReactionType
+  createdAt DateTime     @default(now())
+
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comment   Comment      @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, commentId])
+  @@map("comment_reactions")
+}

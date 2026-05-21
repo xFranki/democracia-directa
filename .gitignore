@@ -1,0 +1,29 @@
+# Dependencias
+node_modules/
+
+# Variables de entorno — NUNCA subir al repositorio
+.env
+.env.local
+.env.production
+.env.*.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Build outputs
+dist/
+build/
+.next/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+
+# Docker
+docker-compose.override.yml

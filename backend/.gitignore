@@ -1,0 +1,21 @@
+# Dependencias
+node_modules/
+
+# Variables de entorno — NUNCA subir
+.env
+.env.local
+.env.production
+
+# Build
+dist/
+
+# Logs
+logs/
+*.log
+
+# Prisma — no subir migraciones de producción accidentalmente
+prisma/dev.db
+
+# Sistema
+.DS_Store
+Thumbs.db
