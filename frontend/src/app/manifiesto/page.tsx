@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import {
   ScrollText, CheckCircle2, Clock, Target, Rocket,
-  Users, Globe, Lock, Zap, ArrowRight,
+  Users, Globe, Lock, Zap, ArrowRight, Github,
 } from 'lucide-react';
 
 const FASE1 = [
@@ -325,6 +325,15 @@ export default function ManifiestoPage() {
           <Link href="/propuestas" className="btn-secondary px-8 py-3">
             Ver propuestas
           </Link>
+          <a
+            href="https://github.com/xFranki/democracia-directa"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-secondary px-8 py-3 flex items-center gap-2"
+          >
+            <Github className="w-4 h-4" />
+            Código abierto
+          </a>
         </div>
       </section>
 

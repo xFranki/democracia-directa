@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Shield } from 'lucide-react';
+import { Shield, Github } from 'lucide-react';
 
 export function Footer() {
   return (
@@ -18,9 +18,18 @@ export function Footer() {
             <Link href="/privacidad" className="hover:text-white transition-colors">Privacidad</Link>
           </div>
 
-          <p className="text-white/25 text-xs">
-            Código abierto · Democracia Directa · España 2026
-          </p>
+          <div className="flex items-center gap-3 text-white/25 text-xs">
+            <span>Democracia Directa · España 2026</span>
+            <a
+              href="https://github.com/xFranki/democracia-directa"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 hover:text-white transition-colors"
+            >
+              <Github className="w-3.5 h-3.5" />
+              Código abierto
+            </a>
+          </div>
         </div>
       </div>
     </footer>
