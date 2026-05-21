@@ -33,7 +33,7 @@ export function CtaSection() {
               <ArrowRight className="w-5 h-5" />
             </Link>
             <Link
-              href="https://github.com"
+              href="https://github.com/xFranki/democracia-directa"
               className="btn-secondary flex items-center gap-2 text-lg px-10 py-4"
               target="_blank"
               rel="noopener noreferrer"
